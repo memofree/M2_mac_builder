@@ -20,7 +20,15 @@ jobs:
           mkdir -p M2_Demo_macOS/_R_lib_mac
           Rscript -e 'install.packages("remotes", repos="https://cloud.r-project.org")'
           Rscript -e 'remotes::install_version("xgboost", version="1.7.9.1", repos="https://cloud.r-project.org", lib="M2_Demo_macOS/_R_lib_mac")'
-          Rscript -e 'install.packages("data.table", lib="M2_Demo_macOS/_R_lib_mac", repos="https://cloud.r-project.org")'
+          Rscript -e 'install.packages(c("data.table","jsonlite"), lib="M2_Demo_macOS/_R_lib_mac", repos="https://cloud.r-project.org")'
+
+      # ✅ 重要：在「同一個 workflow run」裡直接測試
+      - name: Smoke test (load packages + read model files)
+        run: |
+          Rscript -e 'library(xgboost, lib.loc="M2_Demo_macOS/_R_lib_mac"); cat("XGBOOST LOADED OK\n")'
+          Rscript -e 'library(data.table, lib.loc="M2_Demo_macOS/_R_lib_mac"); library(jsonlite, lib.loc="M2_Demo_macOS/_R_lib_mac"); cat("DT/JSON OK\n")'
+          Rscript -e 'readRDS("M2_Demo_macOS/models/M2_fit_final.rds"); cat("M2_fit_final.rds OK\n")'
+          Rscript -e 'readRDS("M2_Demo_macOS/models/M2_dat_real_m2.rds"); cat("M2_dat_real_m2.rds OK\n")'
 
       - name: Zip library
         run: |
@@ -32,6 +40,3 @@ jobs:
         with:
           name: R_lib_mac
           path: M2_Demo_macOS/R_lib_mac.zip
-      - name: Test loading xgboost on mac runner
-        run: |
-          Rscript -e "library(xgboost, lib.loc='M2_Demo_macOS/_R_lib_mac'); cat('XGBOOST LOADED OK\n')"
