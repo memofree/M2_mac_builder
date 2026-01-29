@@ -1,0 +1,30 @@
+name: Build macOS R Library
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install R
+        uses: r-lib/actions/setup-r@v2
+
+      - name: Install packages into portable library
+        run: |
+          mkdir -p M2_Demo_macOS/_R_lib_mac
+          Rscript -e 'install.packages(c("xgboost","data.table"), lib="M2_Demo_macOS/_R_lib_mac", repos="https://cloud.r-project.org")'
+
+      - name: Zip library
+        run: |
+          cd M2_Demo_macOS
+          zip -r R_lib_mac.zip _R_lib_mac
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: R_lib_mac
+          path: M2_Demo_macOS/R_lib_mac.zip
