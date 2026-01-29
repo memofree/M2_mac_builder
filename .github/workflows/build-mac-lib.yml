@@ -32,3 +32,6 @@ jobs:
         with:
           name: R_lib_mac
           path: M2_Demo_macOS/R_lib_mac.zip
+      - name: Test loading xgboost on mac runner
+        run: |
+          Rscript -e "library(xgboost, lib.loc='M2_Demo_macOS/_R_lib_mac'); cat('XGBOOST LOADED OK\n')"
